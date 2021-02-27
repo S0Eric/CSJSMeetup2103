@@ -1,0 +1,47 @@
+.ctrl1_container {
+  width: 800px;
+  height: 400px;
+  background: black;
+  font-size: 1vw;
+  color: white;
+}
+
+.ctrl1_titlebar {
+  display: grid;
+  grid-template-columns: 115px repeat(8, 1fr);
+  grid-template-rows: 25px;
+  width: 100%;
+  background: grey;
+}
+
+.ctrl1_timestamp {
+  font-weight: bold;
+  color: #3333CC;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5px;
+}
+
+.ctrl1_datatable {
+  display: grid;
+  grid-template-columns: 115px repeat(8, 1fr);
+  width: 100%;
+}
+
+.ctrl1_descr {
+  font-weight: bold;
+  color: #55CC55;
+  text-align: right;
+  border-top: 0.1px solid grey;
+  border-bottom: 0.1px solid grey;
+  padding: 1px 5px 1px 5px;
+}
+
+.ctrl1_value {
+  color: #CCCCCC;
+  text-align: right;
+  border-top: 0.1px solid grey;
+  border-bottom: 0.1px solid grey;
+  padding: 1px 5px 1px 5px;
+}

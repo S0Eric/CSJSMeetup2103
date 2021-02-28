@@ -3,14 +3,14 @@ let tableData1 = [
   { descr: "Temp", values: [60, 61, 62, 63, 64, 65, 66, 67] },
   { descr: "Stir Speed", values: [300, 303, 306, 309, 311, 315, 312, 299] },
   { descr: "Amps", values: [3.5, 3.6, 3.4, 3.3, 3.3, 3.2, 3.1, 2.9] }
-]
+];
 
 let timestamps2 = ["00:30:00", "01:00:00", "01:30:00", "02:00:00", "02:30:00", "03:00:00", "03:30:00", "02:00:00"];
 let tableData2 = [
   { descr: "Amps", values: [2.5, 2.6, 2.4, 2.3, 2.3, 2.2, 2.1, 1.9] },
   { descr: "Temp", values: [80, 81, 82, 83, 84, 85, 86, 87] },
   { descr: "Stir Speed", values: [200, 203, 206, 209, 211, 215, 212, 299] }
-]
+];
 
 if (window.addEventListener) {
   window.addEventListener("load", () => {

@@ -8,7 +8,10 @@ let tableData = [
   { descr: "Amps", values: [3.5, 3.6, 3.4, 3.3, 3.3, 3.2, 3.1, 2.9] }
 ];
 
-type RowType = { descr: string, values: number[] }
+type RowType = {
+  descr: string;
+  values: number[];
+}
 
 type OurControlArgsType = {
   timestamps: string[];
@@ -31,7 +34,7 @@ type OurControlArgsType = {
 //   </div>
 // );
 
-const OurControl: Component<OurControlArgsType> = args => (
+export const OurControl: Component<OurControlArgsType> = args => (
   <div class="ctrl1_container">
     <OurTitleBarControl timestamps={args.timestamps} />
     <div class="ctrl1_datatable">
@@ -103,6 +106,7 @@ const OurRowControl: Component<OurRowControlArgsType> = args => (
 
 if (window.addEventListener) {
   window.addEventListener("load", () => {
-    render(() => <OurControl timestamps={timestamps} tableData={tableData} />, document.getElementById("root") as Node);
+    render(() => <OurControl timestamps={timestamps} tableData={tableData} />,
+            document.getElementById("root") as Node);
   });
 }

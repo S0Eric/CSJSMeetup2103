@@ -44,16 +44,26 @@ let createDivElement = (classname?: string, parent?: HTMLElement, text?: string)
 }
 
 function renderTableControl(timestamps: string[], tableData: { descr: string, values: number[] }[]) {
+  // Get a reference to the root node where we will render the table.
   let root = document.getElementById("root") ?? undefined;
   if (root === undefined) { return; }
+  // Delete all child content of the root node because we will replace it.
   root.innerHTML = "";
+  // Create the container DIV.
   let container = createDivElement("ctrl1_container", root);
+  // Create the title bar DIV.
   let titlebar = createDivElement("ctrl1_titlebar", container);
+  // Add the single label to the title bar.
   createDivElement("ctrl1_timestamp", titlebar, "hh:mm:ss");
+  // Add each timestamp to the title bar.
   timestamps.forEach(ts => createDivElement("ctrl1_timestamp", titlebar, ts));
+  // Create the data table DIV.
   let datatable = createDivElement("ctrl1_datatable", container);
+  // Add each row to the data table.
   tableData.forEach(row => {
+    // Create the description label.
     createDivElement("ctrl1_descr", datatable, row.descr);
+    // Add each value to the table.
     row.values.forEach(v => createDivElement("ctrl1_value", datatable, v.toString()));
   });
 }

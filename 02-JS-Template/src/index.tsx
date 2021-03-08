@@ -43,6 +43,7 @@ let tableHtml = `
 </div>
 `;
 
+// Function to create a template from an HTML fragment.
 let createTemplate = (html: string) => {
   const t = document.createElement("template");
   t.innerHTML = html.trim();
@@ -50,8 +51,10 @@ let createTemplate = (html: string) => {
   return node;
 }
 
+// Create a template from our HTML content.
 let tableTemplate = createTemplate(tableHtml) ?? undefined;
 
+// Function that renders a given fragment onto our HTML page.
 let renderFromTemplate = (template: ChildNode | undefined) => {
   if (template === undefined) { return; }
   let root = document.getElementById("root") ?? undefined;
@@ -62,6 +65,7 @@ let renderFromTemplate = (template: ChildNode | undefined) => {
   root.appendChild(node);
 }
 
+// When the window loads, render the content.
 if (window.addEventListener) {
   window.addEventListener("load", () => {
     // Render from template.

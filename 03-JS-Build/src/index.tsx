@@ -14,23 +14,26 @@ let tableData2 = [
 
 if (window.addEventListener) {
   window.addEventListener("load", () => {
-    // Initially render the control.
-    renderTableControl(timestamps1, tableData1)
-
-    // After interval, re-render the control with different data, and after half the
-    // interval, re-render with the original data - basically swap back and forth.
-    let interval = 5000;
-    setInterval(() => {
-      renderTableControl(timestamps2, tableData2);
-      setTimeout(() => renderTableControl(timestamps1, tableData1), interval / 2);
-    }, interval);
+    // Alternate between the two data sets every second.
+    renderTableControl(timestamps1, tableData1);
+    let show1 = false;
+    setInterval(function() {
+      if (show1) {
+        renderTableControl(timestamps2, tableData2);
+        show1 = false;
+      }
+      else {
+        renderTableControl(timestamps1, tableData1);
+        show1 = true;
+      }
+    }, 2000);
   });
 }
 
 // Function to create a DIV element, optionally add a class name,
 // optionally add it to a parent node, and optionally add a child text node.
-let createDivElement = (classname?: string, parent?: HTMLElement, text?: string) => {
-  let ret = document.createElement("div");
+let createElement = (type: string, classname?: string, parent?: HTMLElement, text?: string) => {
+  let ret = document.createElement(type);
   if (classname !== undefined) {
     ret.className = classname;
   }
@@ -45,25 +48,25 @@ let createDivElement = (classname?: string, parent?: HTMLElement, text?: string)
 
 function renderTableControl(timestamps: string[], tableData: { descr: string, values: number[] }[]) {
   // Get a reference to the root node where we will render the table.
-  let root = document.getElementById("root") ?? undefined;
-  if (root === undefined) { return; }
+  let root = document.getElementById("root");
+  if (root === null) { return; }
   // Delete all child content of the root node because we will replace it.
   root.innerHTML = "";
   // Create the container DIV.
-  let container = createDivElement("ctrl1_container", root);
+  let container = createElement("div", "ctrl1_container", root);
   // Create the title bar DIV.
-  let titlebar = createDivElement("ctrl1_titlebar", container);
+  let titlebar = createElement("div", "ctrl1_titlebar", container);
   // Add the single label to the title bar.
-  createDivElement("ctrl1_timestamp", titlebar, "hh:mm:ss");
+  createElement("div", "ctrl1_timestamp", titlebar, "hh:mm:ss");
   // Add each timestamp to the title bar.
-  timestamps.forEach(ts => createDivElement("ctrl1_timestamp", titlebar, ts));
+  timestamps.forEach(ts => createElement("div", "ctrl1_timestamp", titlebar, ts));
   // Create the data table DIV.
-  let datatable = createDivElement("ctrl1_datatable", container);
+  let datatable = createElement("div", "ctrl1_datatable", container);
   // Add each row to the data table.
   tableData.forEach(row => {
     // Create the description label.
-    createDivElement("ctrl1_descr", datatable, row.descr);
+    createElement("div", "ctrl1_descr", datatable, row.descr);
     // Add each value to the table.
-    row.values.forEach(v => createDivElement("ctrl1_value", datatable, v.toString()));
+    row.values.forEach(v => createElement("div", "ctrl1_value", datatable, v.toString()));
   });
 }

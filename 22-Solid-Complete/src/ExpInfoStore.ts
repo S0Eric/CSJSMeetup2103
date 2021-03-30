@@ -1,7 +1,10 @@
-import { createState, SetStateFunction, State, batch } from "solid-js";
+import { batch, createState, SetStateFunction, State } from "solid-js";
 import { SettingsDataType } from "./MockDataService";
 
-type SettingRowType = { descr: string, values: (number | undefined)[] }
+type SettingRowType = {
+  descr: string,
+  values: (number | undefined)[]
+}
 
 type ExpInfoStateType = {
   startTimestamp: number;
@@ -12,14 +15,18 @@ type ExpInfoStateType = {
 export class ExpInfoStore {
   state: State<ExpInfoStateType>;
   private setState: SetStateFunction<ExpInfoStateType>;
-  private descrToRowIndex: { [key: string]: number } = {};
+  private descrToRowIndex: { [descr: string]: number } = {};
 
   constructor() {
     [this.state, this.setState] = createState<ExpInfoStateType>(this.createInitialState());
   }
 
-  setStartTimestamp(ts: number) { this.setState("startTimestamp", ts) }
+  // Initially set the experiment start timestamp.
+  setStartTimestamp(timestamp: number) {
+    this.setState("startTimestamp", timestamp);
+  }
 
+  // Set the timestamp for a particular column index.
   setTimestamp(index: number, timestamp: number) {
     // Tell Solid not to update UI until we are done with all these state updates.
     batch(() => {
@@ -32,6 +39,7 @@ export class ExpInfoStore {
     })
   }
 
+  // Set the settings values for a particular column index.
   setSettings(index: number, settings: SettingsDataType) {
     // Tell Solid not to update UI until we are done with all these state updates.
     batch(() => {
@@ -60,7 +68,7 @@ export class ExpInfoStore {
   private createInitialState(): ExpInfoStateType {
     return {
       startTimestamp: 0,
-      timestamps: [ -1, -1, -1, -1, -1, -1, -1, -1 ],
+      timestamps: [],
       settings: []
     }
   }

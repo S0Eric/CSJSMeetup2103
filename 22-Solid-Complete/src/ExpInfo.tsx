@@ -1,4 +1,4 @@
-import { Component, For, Show } from "solid-js"
+import { Component, For, Index, Show } from "solid-js"
 import { ExpInfoStore } from "./ExpInfoStore";
 
 type ExpInfoPropsType = {
@@ -9,7 +9,7 @@ type ExpInfoPropsType = {
 export const ExpInfo: Component<ExpInfoPropsType> = props => {
   // Format the timestamp as HH:MM:SS or __:__:__ if undefined.
   const fmtTs = (timestamp: number | undefined) => {
-    console.log(`Formatting timestamp ${timestamp}`);
+//    console.log(`Formatting timestamp ${timestamp}`);
     if (timestamp !== undefined) {
       // Get number of milliseconds between the timestamp and the start time.
       let time = timestamp > props.store.state.startTimestamp ? timestamp - props.store.state.startTimestamp : 0;
@@ -25,7 +25,7 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
 
   // Display the value as a string, or "-" if undefined.
   const fmtValue = (val: number | undefined) => {
-    console.log("Formatting a value");
+//    console.log("Formatting a value");
     return val !== undefined ? val.toString() : "-";
   }
 
@@ -46,18 +46,24 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
       <div class="expinfo_container">
         <div class="expinfo_titlebar">
           <div class="expinfo_timestamp">hh:mm:ss</div>
-          <For each={props.store.state.timestamps}>
-            {timestamp => <div class="expinfo_timestamp">{fmtTs(timestamp)}</div>}
-          </For>
+          <Index each={props.store.state.timestamps}>
+            {timestamp => {
+              console.log("Rendering timestamp");
+              return <div class="expinfo_timestamp">{fmtTs(timestamp())}</div>;
+            }}
+          </Index>
         </div>
         <div class="expinfo_datatable">
           <For each={props.store.state.settings}>
             {setting => (
               <>
                 <div class="expinfo_descr">{setting.descr}</div>
-                <For each={setting.values}>
-                  {value => <div class="expinfo_value">{fmtValue(value)}</div>}
-                </For>
+                <Index each={setting.values}>
+                  {value => {
+                    console.log("Rendering a value");
+                    return <div class="expinfo_value">{fmtValue(value())}</div>;
+                  }}
+                </Index>
               </>
             )}
           </For>

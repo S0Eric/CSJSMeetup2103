@@ -293,19 +293,21 @@ So, two seconds after rendering the blank component, it will populate all timest
 
 Now that we have some data in the state object, we have to change our component to render its UI from that data.
 
-Let's delete the 8 static timestamp DIVs, and uncomment the code that creates them from the timestamps array. Solid provides a special For component that iterates over a collection, specified by the each property. For each element in the collection, it invokes the function that is a child of the For component. That function returns the JSX that will be used.
+Let's delete the 8 static timestamp DIVs, and uncomment the code that creates them from the timestamps array. Solid provides special For and Index loop components that iterate over a collection, specified by the each property. The For component is for looping through a list of objects, while the Index component is for looping through a list of primitives. To minimize re-rendering, Solid has to know when an item in a list has changed. Each object has a unique ID, but primitives don't. The Index component uses the list index as the key.
+
+For each element in the collection, For and Index invoke the function that is a child of the loop component. That function returns the JSX that will be used.
 
 Formatting the timestamp required a bit of code, so I'll uncomment the fmtTs function that does that. It displays a special string if the timestamp is undefined, or if the timestamp is a number then it subtracts it from the experiment start timestamp to get the offset time and formats that as a string.
 
 When I save this file, it'll hot reload and you'll see the blank timestamp placeholders and then the actual timestamps 2 seconds later. Now let's tackle the values.
 
-Rendering the settings rows is very similar except it performs two nested For loops.
+Rendering the settings rows is very similar except it performs two nested loops.
 
 ====Delete all the static data and uncomment out the dynamic part====
 
 The outer For iterates over each setting row, the outer loop function creates the DIV containing the description and then iterates over each value in that setting row.
 
-The inner For function invokes the fmtValue function that displays the value as a string, or a dash if it's undefined.
+The inner Index function invokes the fmtValue function that displays the value as a string, or a dash if it's undefined.
 
 ====Uncomment the fmtValue function====
 

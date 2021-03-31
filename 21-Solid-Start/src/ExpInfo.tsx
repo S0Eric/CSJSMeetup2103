@@ -1,4 +1,4 @@
-import { Component, For } from "solid-js"
+import { Component, For, Index } from "solid-js"
 // import { ExpInfoStore } from "./ExpInfoStore";
 
 type ExpInfoPropsType = {
@@ -36,9 +36,9 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
         <div class="expinfo_timestamp">01:30:00</div>
         <div class="expinfo_timestamp">01:45:00</div>
         <div class="expinfo_timestamp">02:00:00</div>
-        {/* <For each={props.store.state.timestamps}>
-          {timestamp => <div class="expinfo_timestamp">{fmtTs(timestamp)}</div>}
-        </For> */}
+        {/* <Index each={props.store.state.timestamps}>
+          {timestamp => <div class="expinfo_timestamp">{fmtTs(timestamp())}</div>}
+        </Index> */}
       </div>
       <div class="expinfo_datatable">
         <div class="expinfo_descr">Temp</div>
@@ -72,9 +72,9 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
           {setting => (
             <>
               <div class="expinfo_descr">{setting.descr}</div>
-              <For each={setting.values}>
-                {value => <div class="expinfo_value">{fmtValue(value)}</div>}
-              </For>
+              <Index each={setting.values}>
+                {value => <div class="expinfo_value">{fmtValue(value())}</div>}
+              </Index>
             </>
           )}
         </For> */}

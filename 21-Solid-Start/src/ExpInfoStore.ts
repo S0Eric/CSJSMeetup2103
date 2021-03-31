@@ -8,7 +8,7 @@ type SettingRowType = {
 
 type ExpInfoStateType = {
   // startTimestamp: number;
-  // timestamps: number[];
+  // timestamps: (number | undefined)[];
   // settings: SettingRowType[];
 }
 
@@ -22,7 +22,7 @@ export class ExpInfoStore {
   //   [this.state, this.setState] = createState<ExpInfoStateType>(
   //     {
   //       startTimestamp: 0,
-  //       timestamps: [],
+  //       timestamps: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
   //       settings: []
   //     }
   //   );
@@ -58,7 +58,7 @@ export class ExpInfoStore {
   //     else {
   //       // Add a new row for this description we've not seen before.
   //       this.descrToRowIndex[description] = this.state.settings.length;
-  //       const values = [];
+  //       const values = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
   //       values[index] = value;
   //       const newRow: SettingRowType = { descr: description, values: values }
   //       this.setState("settings", [...this.state.settings, newRow]);

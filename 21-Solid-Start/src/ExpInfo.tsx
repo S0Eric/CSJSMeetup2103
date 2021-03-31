@@ -7,8 +7,7 @@ type ExpInfoPropsType = {
 
 export const ExpInfo: Component<ExpInfoPropsType> = props => {
   // // Format the timestamp as HH:MM:SS or __:__:__ if undefined.
-  // const fmtTs = (idx: number) => {
-  //   const timestamp = props.store.state.timestamps[idx];
+  // const fmtTs = (timestamp: number | undefined) => {
   //   if (timestamp !== undefined) {
   //     // Get number of milliseconds between the timestamp and the start time.
   //     let time = timestamp > props.store.state.startTimestamp ? timestamp - props.store.state.startTimestamp : 0;
@@ -37,8 +36,8 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
         <div class="expinfo_timestamp">01:30:00</div>
         <div class="expinfo_timestamp">01:45:00</div>
         <div class="expinfo_timestamp">02:00:00</div>
-        {/* <For each={[0, 1, 2, 3, 4, 5, 6, 7]}>
-          {idx => <div class="expinfo_timestamp">{fmtTs(idx)}</div>}
+        {/* <For each={props.store.state.timestamps}>
+          {timestamp => <div class="expinfo_timestamp">{fmtTs(timestamp)}</div>}
         </For> */}
       </div>
       <div class="expinfo_datatable">
@@ -73,10 +72,8 @@ export const ExpInfo: Component<ExpInfoPropsType> = props => {
           {setting => (
             <>
               <div class="expinfo_descr">{setting.descr}</div>
-              <For each={[0, 1, 2, 3, 4, 5, 6, 7]}>
-                {idx => (
-                  <div class="expinfo_value">{fmtValue(setting.values[idx])}</div>
-                )}
+              <For each={setting.values}>
+                {value => <div class="expinfo_value">{fmtValue(value)}</div>}
               </For>
             </>
           )}

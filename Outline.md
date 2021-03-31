@@ -109,7 +109,7 @@ Another thing to note is styles can be specified as a string, or as an object wi
 
 The Header component is a single-line arrow function, so it doesn't have curly braces, but it's recommended that JSX spread over multiple lines is enclosed in parenthesis.
 
-Finally, JSX has to resolve to a single node, but the Header component contains a list of elements without a natural top-level node to contain them. When this happens, you have to enclose your element list with this empty element, which is a non-node container called a fragment. When a fragment is provided for insertion as a child of another node, it inserts the children, not the fragment.
+Finally, JSX has to resolve to a single node, but the Header component contains a list of elements without a natural top-level node to contain them. When this happens, you have to enclose your element list with this blank tag, which is a non-node container called a fragment. When a fragment is provided for insertion as a child of another node, it inserts the children, not the fragment.
 
 The OurButton and Header components declared here are implemented as arrow functions. I use them almost exclusivly. I'll post a link to an interesting article about arrow functions. As this article says, arrow functions provide "a very clean concise syntax and more intuitive scoping and this binding".
 
@@ -243,9 +243,9 @@ Now we have to think about what we put in the state. Since this is TypeScript, w
 
 Instead of storing strings for the timestamps, we will store a numeric timestamp for the experiment start time, and then an array of numeric timestamps for each column. This is how timestamps would be stored in a database. The displayed time strings will be the offset of each timestamp from the start of the experiment, calculated inside the component function.
 
-The reason the values array elements has a type of number **or** undefined is we want to be able to clear a column of data by setting the values in that column to undefined, and the component will display those values as a dash. And the values array can be empty or sparsly populated, and reading a non-populated index will return undefined, so this type matches that JavaScript behavior.
+The reason the timestamps and values array elements have a type of number **or** undefined is we want to be able to clear a column of data by setting the values in that column to undefined, and the component will display these missing values with special markers. I found that Solid doesn't perform as well with sparse arrays, so I'm filling them in initially with undefined values.
 
-Now we know what to pass inside our initial state object. Emty arrays are fine.
+Now we know what to pass inside our initial state object.
 
 ====Uncomment the initial object====
 
@@ -295,9 +295,7 @@ Now that we have some data in the state object, we have to change our component 
 
 Let's delete the 8 static timestamp DIVs, and uncomment the code that creates them from the timestamps array. Solid provides a special For component that iterates over a collection, specified by the each property. For each element in the collection, it invokes the function that is a child of the For component. That function returns the JSX that will be used.
 
-Since the state's timestamps array starts out as empty, and can be sparse, we can't iterate over that to populate all columns, so it iterates over a hardcoded array of indexes from 0 to 7. The For component's inner function simply returns a DIV element for header cell containing the time offset.
-
-Formatting the timestamp required a bit of code, so I'll uncomment the fmtTs function that does that. It displays a special string if the timestamp is undefined, for if the timestamp is a number then it subtracts it from the experiment start timestamp to get the offset time and formats that as a string.
+Formatting the timestamp required a bit of code, so I'll uncomment the fmtTs function that does that. It displays a special string if the timestamp is undefined, or if the timestamp is a number then it subtracts it from the experiment start timestamp to get the offset time and formats that as a string.
 
 When I save this file, it'll hot reload and you'll see the blank timestamp placeholders and then the actual timestamps 2 seconds later. Now let's tackle the values.
 
@@ -307,7 +305,7 @@ Rendering the settings rows is very similar except it performs two nested For lo
 
 The outer For iterates over each setting row, the outer loop function creates the DIV containing the description and then iterates over each value in that setting row.
 
-The values arrays can be sparse, so that loop also iterates over a hardcoded array of indexes, and the inner For function invokes the fmtValue function. This function simply displays the value as a string, or a dash if the value is undefined.
+The inner For function invokes the fmtValue function that displays the value as a string, or a dash if it's undefined.
 
 ====Uncomment the fmtValue function====
 
@@ -382,6 +380,12 @@ Now we'll pass the function to the ExpInfo component.
 Now when the code is saved, the buttons are rendered and they work.
 
 I like that we didn't have to write any code to update the UI, and I like JSX because I was able to start with the HTML from my prototype and the resulting code has a vague resemblance to the original HTML. And in the end there is very little code here.
+
+Is everyone still awake?
+
+There is still the big question of how Solid efficiently updates the UI.
+
+Let's put in some console logging to see how often it calls various functions.
 
 
 

@@ -18,7 +18,13 @@ export class ExpInfoStore {
   private descrToRowIndex: { [descr: string]: number } = {};
 
   constructor() {
-    [this.state, this.setState] = createState<ExpInfoStateType>(this.createInitialState());
+    [this.state, this.setState] = createState<ExpInfoStateType>(
+      {
+        startTimestamp: 0,
+        timestamps: [],
+        settings: []
+      }
+    );
   }
 
   // Initially set the experiment start timestamp.
@@ -28,7 +34,6 @@ export class ExpInfoStore {
 
   // Set the timestamp for a particular column index.
   setTimestamp(index: number, timestamp: number) {
-    // Tell Solid not to update UI until we are done with all these state updates.
     batch(() => {
       // Update the timestamp at the specified index.
       this.setState("timestamps", index, timestamp);
@@ -36,12 +41,11 @@ export class ExpInfoStore {
       for (let i = 0; i < this.state.settings.length; i++) {
         this.setState("settings", i, "values", index, undefined);
       }
-    })
+    });
   }
 
   // Set the settings values for a particular column index.
   setSettings(index: number, settings: SettingsDataType) {
-    // Tell Solid not to update UI until we are done with all these state updates.
     batch(() => {
       // Loop through the settings, setting the value in each row for the specified column index.
       for (let i = 0; i < settings.length; i++) {
@@ -63,13 +67,5 @@ export class ExpInfoStore {
         }
       }
     });
-  }
-
-  private createInitialState(): ExpInfoStateType {
-    return {
-      startTimestamp: 0,
-      timestamps: [],
-      settings: []
-    }
   }
 }

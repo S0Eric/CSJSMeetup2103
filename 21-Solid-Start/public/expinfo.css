@@ -1,0 +1,43 @@
+.expinfo_container {
+  width: 1000px;
+  height: 400px;
+  background: black;
+  color: white;
+}
+
+.expinfo_titlebar {
+  display: grid;
+  grid-template-columns: 200px repeat(8, 1fr);
+  width: 100%;
+  background: grey;
+}
+
+.expinfo_timestamp {
+  font-weight: bold;
+  color: #3333CC;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 3px 5px 3px 0px;
+}
+
+.expinfo_datatable {
+  display: grid;
+  grid-template-columns: 200px repeat(8, 1fr);
+  width: 100%;
+}
+
+.expinfo_descr {
+  font-weight: bold;
+  color: #55CC55;
+  text-align: right;
+  border-bottom: 0.1px solid grey;
+  padding: 1px 5px 1px 5px;
+}
+
+.expinfo_value {
+  color: #CCCCCC;
+  text-align: right;
+  border-bottom: 0.1px solid grey;
+  padding: 1px 5px 1px 5px;
+}

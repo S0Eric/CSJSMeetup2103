@@ -4,7 +4,7 @@
   "description": "A sample project template for using Solid with TypeScript",
   "private": true,
   "scripts": {
-    "dev": "webpack serve --mode=development",
+    "start": "webpack serve --mode=development",
     "build-dev": "webpack --mode=development",
     "build": "webpack --mode=production",
     "watch": "watch \"npm run build-dev\" src"

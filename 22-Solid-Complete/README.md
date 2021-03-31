@@ -25,7 +25,7 @@ npm install
 To launch Webpack's development server (has hot loading):
 
 ```
-npm run dev
+npm run start
 ```
 
 Then [open app in your browser.](http://localhost:8080)

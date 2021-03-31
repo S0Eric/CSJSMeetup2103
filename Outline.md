@@ -1,6 +1,6 @@
 # Introduction
 
-Hello everyone, my name is Eric Schmucker.
+Hello. It's good to see everyone. My name is Eric Schmucker.
 
 I have a lot to cover, so I'll try and move along quickly, but please don't hesitate to stop me to ask questions or give feedback.
 
@@ -24,7 +24,7 @@ It's close to the speed of carefully hand-crafted JavaScript. Efficiency, a smal
 
 # Example Page
 
-Using Solid and JSX, I'm going to create a sample component that's similar to one I created for my job. Here is some static HTML that shows what it will look like:
+Using Solid and JSX, I created an example component that's similar to one I created for my job. Here is some static HTML that shows what it will look like:
 
 ====Open https://jsfiddle.net/S0Eric/L9b2vdxk/12/ ====
 
@@ -105,13 +105,15 @@ But you can provide values from JavaScript expressions by surrounding them in cu
 
 The most common way to use JSX is to define a function that returns a JSX expression. Such a function becomes a re-usable component, as shown by the Header component that contains three OurButton components. The passed properties, like OurButton's text and color, are combined into a single object that is passed to the component as a single **props** argument. See how the OurButton component accesses those passed properties from that **props** object.
 
-Another thing to note is styles can be specified as a string, or as an object with each property of that object specifying a different style. Here is requires double curly braces - the outer ones to indicate this is a JavaScript expression, and the inner ones to indicate this is an object literal.
+Another thing to note is styles can be specified as a string, or as an object with each property of that object specifying a different style. Here it requires double curly braces - the outer ones to indicate this is a JavaScript expression, and the inner ones to indicate this is an object literal.
 
 The Header component is a single-line arrow function, so it doesn't have curly braces, but it's recommended that JSX spread over multiple lines is enclosed in parenthesis.
 
 Finally, JSX has to resolve to a single node, but the Header component contains a list of elements without a natural top-level node to contain them. When this happens, you have to enclose your element list with this empty element, which is a non-node container called a fragment. When a fragment is provided for insertion as a child of another node, it inserts the children, not the fragment.
 
-The OurButton and Header components declared here are implemented as arrow functions. I use them almost exclusivly. Is anyone unfamiliar with arrow function syntax?
+The OurButton and Header components declared here are implemented as arrow functions. I use them almost exclusivly. I'll post a link to an interesting article about arrow functions. As this article says, arrow functions provide "a very clean concise syntax and more intuitive scoping and this binding".
+
+Is anyone unfamiliar with arrow function syntax?
 
 ```
 /*************************************/
@@ -133,408 +135,139 @@ const add3 = (a, b) => {
 
 // Single-line arrow function. Body expression is the return value.
 const add4 = (a, b) => a + b;
+
+// Very handy when passing a small anonymous function.
+let a = [ {name: "Mary", age: 25}, {name: "Nanook", age: 52}, {name: "Fred", age: 22} ];
+// Sort object array by age property.
+a.sort((a,b) => a.age - b.age);
+console.log(a);
 ```
 
-Arrow function syntax is particularly concise when you want to pass a small anonymous function as an argument. It also fixes issues with "this" binding, making it more intuitive for people who come from other OO languages, so I use it exclusively. Except, I read it shouldn't me used for class methods.
+Arrow function syntax is perfect when you want to pass a small anonymous function as an argument. It also fixes issues with "this" binding, making it more intuitive for people who come from other OO languages, so I use it exclusively. Except, I read it shouldn't be used for class methods.
 
 ====####====
 
 You'll see how JSX is used in the component I'm about to create, but does anyone have any questions about this so far?
 
+# UI = F(S)
+
+====Show Blaze web site====
+
+One of the difficulties when writing user interfaces is determining when and what parts of the UI need updating as the user interacts with it and data comes in from the backend. If we look at my employer's application, there is a lot of data behind this UI with a lot of it being displayed in multiple places. For example, you can drag one of those color markers around the bottom of the chart's timeline, and that changes data in the chart on the right. The list of events on a timeline under the chart are also in a small scrollable list in the middle right. When a data point changes, such as a marker moves, or an event gets added, updated, or deleted, you have to update your in-memory list, and if you are brave, you write code to incrementally update the UI to match the data change you just made. The easiest thing to do is call a function that re-renders any component that might show that changed data. That isn't efficient and it gets more complicated as your UI gets bigger. Let's say that you have a feature where a button becomes visible when an event of a specific type exists. You have to put extra logic somewhere that runs whenever that list changes, and checks if the button should be enabled or disabled. UI logic get's spread all over the place.
+
+When you have a framework that solves this problem for you, you only have to write code to manage your application data, or what is called the state of your application, like updating it when data comes in from the backend or the user clicks something, and you have to write code that generates the UI from that state. The framework takes care of the rest.
+
+This may seem theoretical, but these equations explain it well:
+
+====Show UI equations slide 3====
+
+Basically, you have to write function R that takes an event and the current application state and creates the new application state. And you have to write function F, which is actuall a composition of functions that generates your UI from the current state.
+
+For web applications, since updating the DOM is considered expensive, doing this in an efficient way is the trick.
+
+As you saw, JSX let's you write functions that generate your UI, so it's a perfect analogy to the F function. You could implement a formal R function. React's Redux framework does something like that. But what I do is a little simpler. I create a class that manages the application state and provides high level methods for updating the state. It's a looser analogy to the R function, but close.
+
+For me, after working on a codebase for a while that updates the UI explcitly, discovering a framework that eliminates all that hassle allowed me to love doing UI work. If you live there already, then good for you.
+
+All right, now on to the sample component.
+
 # Node Project
 
-Compiling a Solid project is a little involved:
+Compiling a Solid project is a little involved, but in the end, all your code gets compiled and bundled with the small Solid runtime into one JavaScript file.
 
-Coming from a background of statically typed languages, I prefer to use TypeScript.
+Solid's "getting started" guide provides a simple node template project to get started, but its configuration is somewhat hidden, so I created a more explicitly configured node project. I'll post a link to a small GitHub project based on that to the Meetup group.
 
-Webpack performs module resolution, dead code elimination, and minification.
+The build process uses Webpack to perform module resolution, dead code elimination, and minification. Solid provides its own JSX compiler implemented as a babel plugin, and I like to use TypeScript, so that's in the mix also.
 
-Solid provides its own JSX compiler implemented as a babel plugin.
+Here is the example component project I mentioned earlier, opened in Visual Studio Code. I commented out almost all the code and will uncomment it one piece at a time so you can see how you would go from nothing to a complete project step by step.
 
-Solid's "getting started" documentation provides a simple node template project to get started, but I couldn't figure out how to integrate the output into our own build process. So I created a Node project that configures all the required components more explicitly.
-
-I'll post a GitHub link to this small project in case you want to use it as a starting point.
-
-Here is a copy of this project, opened in Visual Studio Code. All its dependencies, except for Solid, is used for building. Only your code, and a small Solid runtime end up in the resulting JavaScript bundle file deployed to production.
-
-Let me first download all dependencies declared in the package.json file.
+You have to download all dependencies with the NPM INSTALL command.
 
 ```
 npm install
 ```
 
-It contains a simple little demo web application that's from a video series that I created. I'll post a link to those videos to the Meetup site.
+Looking at the project folder structure, the **dist** folder contains everything you would deploy to a web server. The **src** folder contains all the source files. Source files can be any combination of JavaScript or TypeScript files, with or without JSX.
 
-I'm going to remove the code that is here and replace it with a very simple app.
-
-====delete App.tsx====
-====delete store.ts====
-
-See that the index.html file contains a single DIV element where our new component will be rendered.
-
-I'll change the index.tsx file to render a simple component. A javascript file containing JSX will have an extension of dot-jsx, while a TypeScript file containing JSX will have an extension of dot-tsx.
-
-```
-import { render } from "solid-js/web";
-
-const Hey = (props: {text: string}) => <strong>Hello {props.text}!</strong>;
-
-window.addEventListener("load", () => {
-  render(() => <Hey text="CSJS" />, document.getElementById("root") as Node);
-});
-```
+See that the index.html file contains a single DIV element where our new component will be rendered. The only source code required at this point is the index.tsx file that defines and renders a simple component.
 
 To start the Webpack development web server, which will build the app, serve it up, and support hot-reload, type this command in the terminal window. This is a shortcut to run the longer command associated with "dev" in the scripts section of the package.json file:
 
 ```
-npm run dev
+npm run start
 ```
 
 Now we can open the web app by control-clicking the link shown in the terminal window.
 
-You can write all this in JavaScript if you want, but I'm partial to TypeScript. If you aren't interested in TypeScript, you can mentally remove all standalone type definitions and type annotations, and that would be your equivalent JavaScript.
+You can write all this in JavaScript if you want, but I'm partial to TypeScript. If you aren't interested in TypeScript, you can mentally remove all standalone type definitions and type annotations, and that would be your equivalent JavaScript. Instead of ts and tsx file types, you would create js and jsx files.
+
+The entry point of the application is the index.tsx file. Try to ignore the commented out code. Ignore the little man behind the curtain.
 
 When the window loads, it invokes Solid's render() funtion, which takes two arguments, the first being a function that returns the JSX expression to render, and the second is the element to render it under. In this case, it'll render the Hey component under the element with the id of "root".
 
 Webpack's development server supports hot-reload, so if I change something and save, it'll recompile and reload automatically.
 
-The Hey component is a simple component, but TypeScript, with strict typing turned on, requires everything have their types declared. The props argument is declared as an object that has a "text" property that is a string.
+The Hey component is a simple component, but with TypeScript's strict mode turned on, everything is required to have a type declared or inferred. The props argument is declared as an object that has a "text" property that is a string.
 
-This works in this simple case, but with Solid, you should use the built-in Component type, giving the type of your argument as a generic type, like this:
+This works in this simple case, but with Solid, you should use the built-in Component type, giving the type of your props object as a generic type passed to Component.
 
-```
-const Hey: Component<{text:string}> = props => <strong>Hello {props.text}!</strong>;
-```
-
-We need to import the Component type declaration from Solid. Again, if you aren't going to use TypeScript, then you won't have to do any of this, except you'll possibly find most bugs at runtime instead of compile time.
-
-As you might imagine, if your component takes many properties, the type passed to Component can get quite large, so I like to declare it as a separate type, like this:
-
-```
-type HeyPropsType = {
-  text: string,
-  color: string
-}
-
-const Hey: Component<HeyPropsType> = props => (
-  <strong style={{color: props.color}}>
-    Hello {props.text}!
-  </strong>
-);
-```
+You can imagine if your component takes many arguments, this type can get long, so I like to declare a named type for the props parameter right before the component.
 
 I added a color property to the Hey component. Doing the extra work of adding types provides benefits like this, where the compiler is telling me I forgot to pass the required color property to Hey.
 
-Now let's create our real component. Let's create ExpInfo.tsx.
+Now let's create our real component. The ExpInfo.tsx file contains a start. At this point, it contains static JSX that shows prototype of the table.
 
-```
-import { Component } from "solid-js"
+Let's change index.tsx to render that instead of Hey.
 
-type ExpInfoPropsType = {
-}
+But of course, we want our UI to render reactively from data. So it's time to think about our application state. The ExpInfoStore.ts defines our class that will manage our application state.
 
-export const ExpInfo: Component<ExpInfoPropsType> = props => (
-  <strong>Placeholder</strong>
-);
-```
+To be reactive, Solid requires that you use its createState() function to create the state object. Your application can create a single state and store all your data in it, or you can create multiple state objects. That's a design decision that isn't that hard to figure out for your particular app, or change as your design develops.
 
-Then change index.tsx to render this new component instead of Hey:
+createState() takes an initial state object as a parameter and returns an array with two elements, what is called a tuple in TypeScript and other languages. This destructuring syntax breaks out those two array elements into separate variables.
 
-```
-import { render } from "solid-js/web";
-import { ExpInfo } from "./ExpInfo";
-
-window.addEventListener("load", () => {
-  render(() => <ExpInfo />, document.getElementById("root") as Node);
-});
-```
-
-Now, let's paste in our big blob of prototype HTML.
-
-```
-<div class="expinfo_container">
-  <div class="expinfo_titlebar">
-    <div class="expinfo_timestamp">hh:mm:ss</div>
-    <div class="expinfo_timestamp">00:15:00</div>
-    <div class="expinfo_timestamp">00:30:00</div>
-    <div class="expinfo_timestamp">00:45:00</div>
-    <div class="expinfo_timestamp">01:00:00</div>
-    <div class="expinfo_timestamp">01:15:00</div>
-    <div class="expinfo_timestamp">01:30:00</div>
-    <div class="expinfo_timestamp">01:45:00</div>
-    <div class="expinfo_timestamp">02:00:00</div>
-  </div>
-  <div class="expinfo_datatable">
-    <div class="expinfo_descr">Temp</div>
-    <div class="expinfo_value">60</div>
-    <div class="expinfo_value">61</div>
-    <div class="expinfo_value">62</div>
-    <div class="expinfo_value">63</div>
-    <div class="expinfo_value">64</div>
-    <div class="expinfo_value">65</div>
-    <div class="expinfo_value">66</div>
-    <div class="expinfo_value">67</div>
-    <div class="expinfo_descr">Stir Speed</div>
-    <div class="expinfo_value">300</div>
-    <div class="expinfo_value">303</div>
-    <div class="expinfo_value">306</div>
-    <div class="expinfo_value">309</div>
-    <div class="expinfo_value">311</div>
-    <div class="expinfo_value">315</div>
-    <div class="expinfo_value">312</div>
-    <div class="expinfo_value">299</div>
-    <div class="expinfo_descr">Amps</div>
-    <div class="expinfo_value">3.5</div>
-    <div class="expinfo_value">3.6</div>
-    <div class="expinfo_value">3.4</div>
-    <div class="expinfo_value">3.3</div>
-    <div class="expinfo_value">3.3</div>
-    <div class="expinfo_value">3.2</div>
-    <div class="expinfo_value">3.1</div>
-    <div class="expinfo_value">2.9</div>
-  </div>
-</div>
-```
-
-But it doesn't look like much without CSS.
-
-In the public folder, I'll create expinfo.css and paste in the CSS.
-
-```
-.expinfo_container {
-  width: 1000px;
-  height: 400px;
-  background: black;
-  color: white;
-}
-
-.expinfo_titlebar {
-  display: grid;
-  grid-template-columns: 200px repeat(8, 1fr);
-  width: 100%;
-  background: grey;
-}
-
-.expinfo_timestamp {
-  font-weight: bold;
-  color: #3333CC;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 3px 5px 3px 0px;
-}
-
-.expinfo_datatable {
-  display: grid;
-  grid-template-columns: 200px repeat(8, 1fr);
-  width: 100%;
-}
-
-.expinfo_descr {
-  font-weight: bold;
-  color: #55CC55;
-  text-align: right;
-  border-bottom: 0.1px solid grey;
-  padding: 1px 5px 1px 5px;
-}
-
-.expinfo_value {
-  color: #CCCCCC;
-  text-align: right;
-  border-bottom: 0.1px solid grey;
-  padding: 1px 5px 1px 5px;
-}
-```
-
-We need a reference to the CSS file in index.html.
-
-```
-    <link href="./expinfo.css" rel="stylesheet">
-```
-
-This project doesn't bundle or hot re-load CSS, so I have to refresh the browser to see these changes.
-
-This is no big trick since the content is static. Of course we want to render the component from data. The magic of a framework like Solid is it figures out how to update the UI efficiently when you change the data behind it. Reactivity is the prize.
-
-To make this work, the data has to be stored in a special state object. Solid provides a function call createState() that creates one of these. Your application can create a single state and store all your data in it, or you can create multiple state objects. That's a design decision that isn't that hard to figure out for your particular app, or change as your design develops.
-
-I like to create a class that manages each state object. I'll call it ExpInfoStore.ts. Does anyone else use classes in their JavaScript code?
-
-Here is a starting point for the code:
-
-```
-import { createState } from "solid-js";
-
-type ExpInfoStateType = {
-}
-
-export class ExpInfoStore {
-  constructor() {
-    let [state, setState] = createState<ExpInfoStateType>(this.createInitialState());
-  }
-
-  private createInitialState(): ExpInfoStateType {
-    return {
-    }
-  }
-}
-```
-
-Solid's createState() function takes an object containing the intial state values and returns an array with two elements, what's called a tuple in TypeScript, and we deconstruct those into two variables, **state** and **setState**. **state** is an object your component and other code uses to read values from the state. **setState** is a function that must be used to update the state.
+**state** is an object your component and other code uses to read values from the state. **setState** is a function that must be used to update the state.
 
 When using TypeScript, the createState() function is given the type of your state object as a generic type argument. I haven't defined any properties for that type yet.
 
 For efficient reactivity, that is, updating the DOM efficiently, Solid wraps the passed initial object in a proxy and returns that, so it knows when and where the state is being read. And the **setState** function makes it obvious to Solid when you are updating it.
 
-In this case, the constructor is creating local variables, but we want to store the returned state in a public class member, and the setState function in a private class member. The **setState** function is stored private because we will expose public helper methods for updating state instead of having external components use setState directly. To tell what type to declare these members as, we can rest our cursor on the returned variables.
+I want to store the returned state in a public class member, and the setState function in a private class member. The **setState** function is stored private because we will expose public helper methods for updating state instead of having external components use setState directly. To tell what type to declare these members as, we can rest our cursor on the returned variables.
 
-```
-  state: State<ExpInfoStateType>;
-  private setState: SetStateFunction<ExpInfoStateType>;
-```
+====Uncomment state, setState and the call to createState()====
 
-Since we want to store these returned values right in the class members, I'll delete the let keyword and reference the instance members.
-
-```
-    [this.state, this.setState] = createState<ExpInfoStateType>(this.createInitialState());
-```
+By the way, when I save these changes, the app isn't recompiling because Webpack eliminated it because it isn't being referenced anywhere yet.
 
 Now we have to think about what we put in the state. Since this is TypeScript, we'll first define the type. To get a clue, let's look at that project that generated the web page from data. We need a list of timestamps, and a list of object containing a description and a list of values.
 
+====Uncomment the state's types====
+
 Instead of storing strings for the timestamps, we will store a numeric timestamp for the experiment start time, and then an array of numeric timestamps for each column. This is how timestamps would be stored in a database. The displayed time strings will be the offset of each timestamp from the start of the experiment, calculated inside the component function.
-
-Here is the type declarations for the state that will hold our data. The row type is broken out because I need to use that alone later.
-
-```
-type SettingRowType = {
-  descr: string,
-  values: (number | undefined)[]
-}
-
-type ExpInfoStateType = {
-  startTimestamp: number;
-  timestamps: number[];
-  settings: SettingRowType[];
-}
-```
 
 The reason the values array elements has a type of number **or** undefined is we want to be able to clear a column of data by setting the values in that column to undefined, and the component will display those values as a dash. And the values array can be empty or sparsly populated, and reading a non-populated index will return undefined, so this type matches that JavaScript behavior.
 
-Now let's populate our initial state object that we pass to Solid's createState() function. Emty arrays are fine.
+Now we know what to pass inside our initial state object. Emty arrays are fine.
 
-```
-  private createInitialState(): ExpInfoStateType {
-    return {
-      startTimestamp: 0,
-      timestamps: [],
-      settings: []
-    }
-  }
-```
+====Uncomment the initial object====
 
-Let's quickly add the mock data service module to the project since we'll be using it soon. I'll create a MockDataService.ts file and paste in this code:
+Let's quickly look at the mock data service module. This module exports a class with a single static getSettingsByTimestamp() method that returns a promise that within a random amount of time from 0 to 1 second, it will return random data for a list of hardcoded settings. We'll use this to simulate pulling data from a backend database.
 
-```
-export type SettingsDataType = { description: string; value: number; }[];
+Let's go back to our index.tsx file and invoke it to see what it returns.
 
-export class MockDataService {
-  private static readonly SettingsMetadata = [
-    { descr: "Image Plane (µm)", isInt: true },
-    { descr: "Laser %", isInt: true },
-    { descr: "Auto Laser 1 on/0 off", isInt: true },
-    { descr: "Triage 1 on/0 off", isInt: true },
-    { descr: "Min Black Level", isInt: true },
-    { descr: "Image Save Interval", isInt: true },
-    { descr: "Images/Interval", isInt: true },
-    { descr: "Meas Duration (sec)", isInt: true },
-    { descr: "Laser Temperature", isInt: false },
-    { descr: "Camera Temperature", isInt: false },
-    { descr: "Triage Quality %", isInt: true },
-    { descr: "Contrast Range", isInt: true },
-    { descr: "Image Spacing on/off", isInt: true },
-    { descr: "Auto Laser interval", isInt: true },
-    { descr: "Exclude Glare on/off", isInt: true },
-    { descr: "Glare Level", isInt: true },
-    { descr: "Max Glare %", isInt: true }
-  ];
+====Uncomment the call to getSettingsByTimestamp====
 
-  static getSettingsByTimestamp(timestamp: number): Promise<SettingsDataType> {
-    return new Promise(function(resolve) {
-      // Return data for this timestamp based on modulo 100 of the timestamp.
-      let rootVal = Math.floor(Math.random() * 50);
-      let data: SettingsDataType = MockDataService.SettingsMetadata.map((setting, idx) => {
-        let val = rootVal + idx;
-        return {
-          description: setting.descr,
-          value: setting.isInt ? val : val + Math.round(Math.random() * 100) / 100
-        }
-      });
-      // Simulate a delay before resolving the promise.
-      setTimeout(() => resolve(data), Math.floor(Math.random() * 2000));
-    });
-  }
-}
-```
-
-This module exports a class with a single static getSettingsByTimestamp() method that returns a promise that within a random amount of time from 0 to 1 second, it will return random data for a list of hardcoded settings. We'll use this to simulate pulling data from a backend database.
+It logs the returned structure to the console, so let's look at that in the browser debugger tools. This function will be called to simulate fetching data for a column in our table.
 
 Ok, back to our store class. 
 
-As far as updates go, external code will simulate the user clicking buttons or dragging icons that change what timestamps they want to see. When a timestamp for any particular index changes, a method will be called on our store instance, indicating that the timestamp for index X has changed. The store will clear the values for that column. Then the data service will be invoked to obtain values for all settings for that new timestamp. When that promise resolves, it'll call another method on the store instance to populate that column's values with the returned data.
+As far as updates go, external code will simulate the user clicking buttons or dragging icons that change what timestamps they want to see. When a timestamp for any particular index changes, a method will be called on our store instance, indicating that the timestamp for column index X has changed. The store will clear the values for that column. Then the data service will be invoked to obtain settings values that timestamp. When that promise resolves, it'll call another method on the store instance to populate that column's values with the returned data.
 
-To support those two operations, here are the methods that will update the state appropriately.
+Oh, and there is a method to set the start timestamp of the experiment.
 
-```
-  // Initially set the experiment start timestamp.
-  setStartTimestamp(timestamp: number) {
-    this.setState("startTimestamp", timestamp);
-  }
+I'll uncomment these three methods.
 
-  // Set the timestamp for a particular column index.
-  setTimestamp(index: number, timestamp: number) {
-    // Tell Solid not to update UI until we are done with all these state updates.
-    batch(() => {
-      // Update the timestamp at the specified index.
-      this.setState("timestamps", index, timestamp);
-      // Loop through the settings rows, clearing this column's values.
-      for (let i = 0; i < this.state.settings.length; i++) {
-        this.setState("settings", i, "values", index, undefined);
-      }
-    })
-  }
+My real data service could return a different list of settings for different timestamps, and in a different order. So as rows in the table are created, I need to record which setting description has been assigned to which row. This is tracked in this descrToRowIndex object. This TypeScript type syntax says that any number of properties can be stored in this object, and the value types are all numbers. This object maps a setting descrption to a previously assigned row index.
 
-  // Set the settings values for a particular column index.
-  setSettings(index: number, settings: SettingsDataType) {
-    // Tell Solid not to update UI until we are done with all these state updates.
-    batch(() => {
-      // Loop through the settings, setting the value in each row for the specified column index.
-      for (let i = 0; i < settings.length; i++) {
-        // Deconstruct the properties out of the settings object.
-        const {description, value} = settings[i];
-        // For this setting description, look up the row it belongs to.
-        const rowIdx = this.descrToRowIndex[description];
-        // If we've seen this description before and have a row, then set the value in that row/column.
-        if (rowIdx !== undefined) {
-          this.setState("settings", rowIdx, "values", index, value);
-        }
-        else {
-          // Add a new row for this description we've not seen before.
-          this.descrToRowIndex[description] = this.state.settings.length;
-          const values = [];
-          values[index] = value;
-          const newRow: SettingRowType = { descr: description, values: values }
-          this.setState("settings", [...this.state.settings, newRow]);
-        }
-      }
-    });
-  }
-```
-
-Solid's batch() function is how you tell it to not update the UI until all the changes performed in the passed function are complete. This may not be required in this case, but it is required when you are making changes to multiple state properties that have dependencies between them.
-
-I'll resolve the missing module imports as I go through the added code.
-
-This code illustrates a number of powerful overloads that Solid's **setState** function provides. You can pass an object to it containing the properties you want to update, but I generally found the overloads that take a propery name as a string more convenient when I'm setting a specific value deep in the structure.
+These three state update methods illustrate a number of powerful overloads that Solid's **setState** function provides. You can pass an object to it containing the properties you want to update, but I generally found the overloads that take a propery name as a string more convenient when I'm setting a specific value deep in the structure.
 
 setStartTimestamp() uses a simple overload that specifies the property name to update and the value to assign.
 
@@ -542,243 +275,121 @@ setTimestamp() uses a overload of **setState** for updating an array where the i
 
 This really blew my mind when I first saw it. I didn't know TypeScript supported such powerful type definitions. Just by passing the state type definition as a generic type parameter to createState(), the returned **setState** function has type information transferred to it that invalid calls to it are flagged by the compiler. Watch what happens when I use an invalid property name, or put in an extra argument, or take one out.
 
-I looked at Solid's source code for the setState() function and it was the most complex TypeScript type definitions I've ever see, and I wasn't able to follow it. But luckily, I don't have a need to create a powerful API like this.
+I looked at Solid's source code for the setState() function and it used the most complex TypeScript type definitions I've ever see. I wasn't able to follow it, but luckily, I don't have a need to create a powerful API like this.
 
-setSettings() is a little more complex because it may optionally add rows to the state's settings property if a row for a particular description doesn't exist already. Given a description, this object will map that to a row index, or if the description isn't in the object, it means a row has to be added.
+setSettings() is a little more complex because it may optionally add rows to the state's settings property if a row for a particular description doesn't exist already.
+
+Since we want the state to be updated outside of our ExpInfo component, we'll create it outside of the component and pass it in.
+
+====Uncomment out store creation in index.tsx, startTimestamp setting, and pass the store to ExpInfo====
+
+Since ExpInfo is going to render its data from the state, we will pass the store to it. But we haven't modified ExpInfo to take that property, so let's do that.
+
+Now we need to populates the state with data.
+
+====Uncomment populateState() in index.tsx, and the call to it====
+
+So, two seconds after rendering the blank component, it will populate all timestamps with timestamps 5 minutes apart.
+
+Now that we have some data in the state object, we have to change our component to render its UI from that data.
+
+Let's delete the 8 static timestamp DIVs, and uncomment the code that creates them from the timestamps array. Solid provides a special For component that iterates over a collection, specified by the each property. For each element in the collection, it invokes the function that is a child of the For component. That function returns the JSX that will be used.
+
+Since the state's timestamps array starts out as empty, and can be sparse, we can't iterate over that to populate all columns, so it iterates over a hardcoded array of indexes from 0 to 7. The For component's inner function simply returns a DIV element for header cell containing the time offset.
+
+Formatting the timestamp required a bit of code, so I'll uncomment the fmtTs function that does that. It displays a special string if the timestamp is undefined, for if the timestamp is a number then it subtracts it from the experiment start timestamp to get the offset time and formats that as a string.
+
+When I save this file, it'll hot reload and you'll see the blank timestamp placeholders and then the actual timestamps 2 seconds later. Now let's tackle the values.
+
+Rendering the settings rows is very similar except it performs two nested For loops.
+
+====Delete all the static data and uncomment out the dynamic part====
+
+The outer For iterates over each setting row, the outer loop function creates the DIV containing the description and then iterates over each value in that setting row.
+
+The values arrays can be sparse, so that loop also iterates over a hardcoded array of indexes, and the inner For function invokes the fmtValue function. This function simply displays the value as a string, or a dash if the value is undefined.
+
+====Uncomment the fmtValue function====
+
+Now when I save the code, we see the table is dynamically populated from state data.
+
+To make it a little more interesting, let's add buttons to the component that let the user adjust the gap between the timestamps. But we want the component to invoke a callback function passed to it from index.tsx when the buttons are pressed.
+
+Since this is a new property passed to ExpInfo, we'll add that to the props argument type definition.
 
 ```
-  private descrToRowIndex: { [descr: string]: number } = {};
+  updownCb?: (isDown: boolean) => void;
 ```
 
-This type syntax says this object contains any nummber of properties that map to numers.
-
-Since we want the state to be updated outside of our ExpInfo component, we'll create it outside of the component and pass it in. So we'll add this code to index.tsx.
+The question mark is shortcut TypeScript syntax to say it can be undefined, making it an optional property. But you have to check for that in your code.
 
 ```
-import { ExpInfoStore } from "./ExpInfoStore";
-import { MockDataService } from "./MockDataService";
-
-let store = new ExpInfoStore();
+      <Show when={props.updownCb !== undefined}>
+        <button style="width:100px" onClick={() => handleUpDownClick(true)}>Down</button>
+        <button style="width:100px" onClick={() => handleUpDownClick(false)}>Up</button>
+      </Show>
 ```
 
-Then we'll pass the store to the ExpInfo component, so it can use it.
+Since we no longer have a single top level node, I have to enclose the returned element list in a fragment.
+
+That Show component is provided by Solid to optionally render its child components if the expression in the when property is true. So if the callback function isn't passed, it won't render the buttons.
+
+The buttons call a local function to handle the click, which simply invokes the passed callback if it was specified.
 
 ```
-  render(() => <ExpInfo store={store} />, document.getElementById("root") as Node);
-```
-
-It'll give us an error until we change ExpInfo to take that property.
-
-```
-import { ExpInfoStore } from "./ExpInfoStore";
-
-type ExpInfoPropsType = {
-  store: ExpInfoStore;
-}
-```
-
-Now we'll add a function to index.tsx that populates the state with data.
-
-```
-const populateState = (timestampGapMinutes: number) => {
-  for (let i = 0; i < 8; i++) {
-    let timestamp = startTimestamp + (i+1) * timestampGapMinutes * 60000;
-    store.setTimestamp(i, timestamp);
-    MockDataService.getSettingsByTimestamp(timestamp).then(settings => {
-      store.setSettings(i, settings);
-    });
+  // Handle the up/down button clicks.
+  const handleUpDownClick = (isDown: boolean) => {
+    if (props.updownCb !== undefined)
+      props.updownCb(isDown);
   }
-}
 ```
 
-And invoke that function when the page loads, with a 2 second delay.
+When I save this, the app recompiles, but because we aren't passing in a callback, the buttons aren't rendered.
+
+In index.tsx, I'll define the function that will be passed to ExpInfo.
 
 ```
-  setTimeout(() => populateState(5), 2000);
-```
+let currentGapMinutes = 15;
 
-Now that we have some data in the state, we have to change our component to render its UI from that data.
-
-Because I'll need some helper functions in this component, I'll change it to a multiline function.
-
-And since the timestamps can be undefined, or are numbers and I need the start timestamp subtracted from them and formatted, and the values need special formatting logic, here are two helper function to do that.
-
-```
-  // Format the timestamp as HH:MM:SS or __:__:__ if undefined.
-  const fmtTs = (idx: number) => {
-    const timestamp = props.store.state.timestamps[idx];
-    if (timestamp !== undefined) {
-      // Get number of milliseconds between the timestamp and the start time.
-      let time = timestamp > props.store.state.startTimestamp ? timestamp - props.store.state.startTimestamp : 0;
-      // Round to nearest second.
-      time = Math.round(time / 1000) * 1000;
-      // Return formatted string, just hh:mm:ss.
-      return new Date(time).toISOString().substring(11, 19);
+const adjustTimestampGap = (isDown: boolean) => {
+  if (isDown) {
+    if (currentGapMinutes > 5) {
+        currentGapMinutes -= 5;
+        populateState(currentGapMinutes)
+      }
     }
-    else {
-      return "__:__:__";
+  else {
+    if (currentGapMinutes < 60) {
+      currentGapMinutes += 5;
+      populateState(currentGapMinutes)
     }
   }
-
-  // Display the value as a string, or "-" if undefined.
-  const fmtValue = (val: number | undefined) => val !== undefined ? val.toString() : "-";
-```
-
-We'll replace the 8 static DIVs containing timestamps to a loop that generates them from the state's **timestamps** property. Solid provides a special For component that loops over a collection. But since the timestamp array may be empty or sparsly populated, but we want to check all 8 indexes, we'll loop over a hardcoded array from 0 to 7.
-
-```
-        <For each={[0, 1, 2, 3, 4, 5, 6, 7]}>
-          {idx => <div class="expinfo_timestamp">{fmtTs(idx)}</div>}
-        </For>
-```
-
-Now it displays the missing timestamp placeholders for 2 seconds and then displays the time offsets.
-
-The For component requires an "each" property that specifies the collection to iterate over, in this case a hardcoded array of indexes. The child expression inside the For is a function that is passed each element as the For component iterating over the array, and that function returns the JSX to use.
-
-Now to render the DIV elements for the values requires nested For loops.
-
-```
-        <For each={props.store.state.settings}>
-          {setting => (
-            <>
-              <div class="expinfo_descr">{setting.descr}</div>
-              <For each={[0, 1, 2, 3, 4, 5, 6, 7]}>
-                {idx => (
-                  <div class="expinfo_value">{setting.values[idx]}</div>
-                )}
-              </For>
-            </>
-          )}
-        </For>
-```
-
-The outer For iterates over each setting row, and the inner For iterates over each value for that setting.
-
-Now we're all set up for reactivity. It initially renders without any data, and then renders the data as the mock data service delivers it.
-
-
-
-
-
-
-This function is defined inside the component so it can reference the store property passed in the props argument. The FormatTime function can be implemented outside the component since it is passed everything it needs. I'll put it at the bottom.
-
-```
-const FormatTime = (timestamp: number, startTimestamp: number) => {
-  // Get number of milliseconds between the timestamp and the start time.
-  let time = timestamp > startTimestamp ? timestamp - startTimestamp : 0;
-  // Round to nearest second.
-  time = Math.round(time / 1000) * 1000;
-  // Return formatted string, just hh:mm:ss.
-  return new Date(time).toISOString().substring(11, 19);
 }
 ```
 
-Let's change the store to make the timestamps 5 minutes apart instead of 15 to make sure it's working.
+It'll adjust the current timestamp gap up or down, but limits the range to 5 to 60 minutes.
 
-Now let's add the rest of the data to the store. We first need to declare the type of this property to store in the state. Looking at the project again that generated the web page from data, here is the new property type:
-
-```
-  settings: { descr: string, values: number[] }[];
-```
-
-This means the settings property is an array of objects, where each object has a description string and an array of values.
-
-In createInitialState(), we'll initialize that property to an empty array.
+And we want it to initially render at the current setting.
 
 ```
-      settings: []
+  setTimeout(() => populateState(currentGapMinutes), 2000);
 ```
 
-Then we'll update the constructor to put in some dummy data for now.
+Now we'll pass the function to the ExpInfo component.
 
-```
-    // Fill in some dummy row data.
-    this.setState("settings", 0, "descr", "Temp");
-    this.setState("settings", 0, "values", [60, 61, 62, 63, 64, 65, 66, 67]);
-    this.setState("settings", 0, "descr", "Stir Speed");
-    this.setState("settings", 0, "values", [300, 303, 306, 309, 311, 315, 312, 299]);
-    this.setState("settings", 0, "descr", "Amps");
-    this.setState("settings", 0, "values", [3.5, 3.6, 3.4, 3.3, 3.3, 3.2, 3.1, 2.9]);
-```
+====Type it in====
 
-Now we'll change our component to render from this data.
+Now when the code is saved, the buttons are rendered and they work.
 
-```
-      <div class="expinfo_datatable">
-        <For each={props.store.state.settings}>
-          {setting => (
-            <>
-              <div class="expinfo_descr">{setting.descr}</div>
-              <For each={setting.values}>
-                {v => (
-                  <div class="expinfo_value">{v}</div>
-                )}
-              </For>
-            </>
-          )}
-        </For>
-      </div>
-```
+I like that we didn't have to write any code to update the UI, and I like JSX because I was able to start with the HTML from my prototype and the resulting code has a vague resemblance to the original HTML. And in the end there is very little code here.
 
 
-To simulate returning real data from a database or backend service, I'll create a class called MockDataService that will return dummy data for a specified timestamp.
-
-```
-type SettingType = {
-  description: string;
-  value: number;
-}
-
-export class MockDataService {
-  private static readonly SettingsMetadata = [
-    { descr: "Image Plane (µm)", isInt: true },
-    { descr: "Laser %", isInt: true },
-    { descr: "Auto Laser 1 on/0 off", isInt: true },
-    { descr: "Triage 1 on/0 off", isInt: true },
-    { descr: "Min Black Level", isInt: true },
-    { descr: "Image Save Interval", isInt: true },
-    { descr: "Images/Interval", isInt: true },
-    { descr: "Meas Duration (sec)", isInt: true },
-    { descr: "Laser Temperature", isInt: false },
-    { descr: "Camera Temperature", isInt: false },
-    { descr: "Triage Quality %", isInt: true },
-    { descr: "Contrast Range", isInt: true },
-    { descr: "Image Spacing on/off", isInt: true },
-    { descr: "Auto Laser interval", isInt: true },
-    { descr: "Exclude Glare on/off", isInt: true },
-    { descr: "Glare Level", isInt: true },
-    { descr: "Max Glare %", isInt: true }
-  ];
-
-  static getSettingsByTimestamp(timestamp: number) {
-    return new Promise(function(resolve) {
-      // Return data for this timestamp based on modulo 100 of the timestamp.
-      let rootVal = Math.floor(timestamp % 100);
-      let data: SettingType[] = MockDataService.SettingsMetadata.map((setting, idx) => {
-        let val = rootVal + idx;
-        return {
-          description: setting.descr,
-          value: setting.isInt ? val : val + Math.round(Math.random() * 100) / 100
-        }
-      });
-      // Simulate a delay between 0 and 1 seconds before resolving the promise.
-      setTimeout(() => resolve(data), Math.floor(Math.random() * 1000));
-    });
-  }
-}
-```
-
-I'll remove all the code from the store that populates it with dummy data.
-
-After saving, you see the component is rendered without data.
-
-Now I'll add code to index.tsx to asynchronously populate the state with data over time.
-
-```
-```
 
 
-In my employer's application, the user can manually drag markers around on an adjacent chart to change where the timestamps are. Each marker is assigned a fixed index, 0-7, but what if we want the component to automatically sort by timestamp, so when they reorder the markers, the columns automatically reorder.
 
+
+https://codeburst.io/jsx-and-html-templates-893ca24c1987
+
+https://www.youtube.com/playlist?list=PLtLhzwNMDs1fMi43erQSzXD49Y4p0TniU
+
+https://zendev.com/2018/10/01/javascript-arrow-functions-how-why-when.html
